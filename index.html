@@ -37,8 +37,10 @@
         <hr>
         <h4>Pago Móvil / Transferencia</h4>
         <p>Banco: H&H Bank | RIF: J-12345678 | Tel: 0412-5555555</p>
-        <label>Adjuntar Captura de Pago:</label><br>
-        <input type="file" id="captura" accept="image/*"><br><br>
+        <label for="captura" style="background: #444; padding: 10px; display: block; text-align: center; border-radius: 5px; cursor: pointer;">
+    📸 Tomar foto del Pago Móvil
+        </label>
+        <input type="file" id="captura" accept="image/*" capture="camera" style="display: none;">
         <button onclick="enviarPedido()" style="width:100%; background: #28a745; color:white; padding:15px; border:none; border-radius:5px; font-size:1.1em;">CONFIRMAR PEDIDO</button>
     </div>
 
