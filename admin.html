@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Cocina - H&H</title>
+    <style>
+        body { font-family: sans-serif; background: #222; color: white; padding: 20px; }
+        .pedido-card { background: #333; border: 1px solid #444; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; }
+        .btn-prep { background: #ffcc00; border: none; padding: 10px; cursor: pointer; font-weight: bold; }
+        .btn-ready { background: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+        .badge { background: #ff4444; padding: 5px 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>👨‍🍳 Comandas H&H BURGER</h1>
+    <div id="contenedor-pedidos">
+        </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        const firebaseConfig = { /* TUS DATOS DE FIREBASE AQUÍ */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const pedidosRef = ref(db, 'pedidos/');
+
+        onValue(pedidosRef, (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('contenedor-pedidos');
+            container.innerHTML = "";
+            
+            for (let id in data) {
+                const p = data[id];
+                if (p.status === "Entregado") continue;
+
+                container.innerHTML += `
+                    <div class="pedido-card">
+                        <div>
+                            <strong>Orden #${id.slice(-4)}</strong><br>
+                            ${p.items.join(", ")} <br>
+                            <small>Estado: ${p.status}</small>
+                        </div>
+                        <div>
+                            <button class="btn-prep" onclick="cambiarEstado('${id}', 'Preparando')">Aceptar</button>
+                            <button class="btn-ready" onclick="cambiarEstado('${id}', 'Listo')">¡LISTO!</button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        window.cambiarEstado = (id, nuevoEstado) => {
+            update(ref(db, 'pedidos/' + id), { status: nuevoEstado });
+        };
+    </script>
+</body>
+</html>
