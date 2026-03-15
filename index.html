@@ -5,74 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H&H BURGER - Pedidos</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #1a1a1a; color: white; padding: 20px; }
-        .header { text-align: center; color: #ffcc00; }
-        .menu-item { background: #333; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-add { background: #ffcc00; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        #carrito { background: #fff; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; }
-        .timer { font-size: 1.2em; color: #ff4444; font-weight: bold; }
+        body { font-family: 'Arial', sans-serif; background: #1a1a1a; color: white; padding: 20px; margin: 0; }
+        .header { text-align: center; color: #ffcc00; padding-top: 10px; }
+        .logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #ffcc00; margin-bottom: 10px; }
+        .menu-item { background: #333; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ffcc00; }
+        .btn-add { background: #ffcc00; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1em; }
+        
+        #carrito { background: #fff; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        #carrito h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .pago-info { background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.9em; margin: 10px 0; border: 1px dashed #ccc; }
+        .timer { font-size: 2em; color: #ff4444; font-weight: bold; display: block; margin-top: 10px; }
+        
+        #status-cola { display: none; background: #333; padding: 20px; border-radius: 15px; margin-top: 20px; border: 2px solid #ffcc00; }
+        
+        .upload-label { background: #444; color: white; padding: 12px; display: block; text-align: center; border-radius: 5px; cursor: pointer; margin: 15px 0; }
+        .btn-confirmar { width:100%; background: #28a745; color:white; padding:15px; border:none; border-radius:5px; font-size:1.2em; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
+
     <div class="header">
+        <img src="IMG-20260315-WA0009.jpg" alt="Logo H&H Burger" class="logo">
         <h1>H&H BURGER 🍔</h1>
-        <p>Selecciona tu combo y escanea tu pago</p>
+        <p>Calidad en cada mordisco</p>
     </div>
 
     <div id="menu-container">
         <div class="menu-item">
             <div><strong>H&H Monster</strong><br>$8.00</div>
-            <button class="btn-add" onclick="agregarAlCarrito('H&H Monster', 8)">+ Añadir</button>
+            <button class="btn-add" onclick="agregarAlCarrito('H&H Monster', 8)">+</button>
         </div>
         <div class="menu-item">
             <div><strong>Perro Premium</strong><br>$5.00</div>
-            <button class="btn-add" onclick="agregarAlCarrito('Perro Premium', 5)">+ Añadir</button>
+            <button class="btn-add" onclick="agregarAlCarrito('Perro Premium', 5)">+</button>
         </div>
     </div>
 
-    <div id="carrito">
-        <h3>Tu Carrito</h3>
-        <ul id="lista-carrito"></ul>
-        <p><strong>Total: $<span id="total">0</span></strong></p>
-        <hr>
-        <h4>Pago Móvil / Transferencia</h4>
-        <p>Pago Móvil / </p>
-        <p>Transferencias Banco de Venezuela | Cuenta: 0102-0336-8900-0009-5167 | RIF: J-506084597 | Tel: 0412-1751523</p>
-        <label for="captura" style="background: #444; padding: 10px; display: block; text-align: center; border-radius: 5px; cursor: pointer;">
-    📸 Tomar foto de la Transferencia
-        </label>
-        <input type="file" id="captura" accept="image/*" capture="camera" style="display: none;">
-        <button onclick="enviarPedido()" style="width:100%; background: #28a745; color:white; padding:15px; border:none; border-radius:5px; font-size:1.1em;">CONFIRMAR PEDIDO</button>
+    <div id="seccion-pedido">
+        <div id="carrito">
+            <h3>🛒 Tu Pedido</h3>
+            <ul id="lista-carrito"></ul>
+            <p style="font-size: 1.2em;"><strong>Total: $<span id="total">0</span></strong></p>
+            
+            <div class="pago-info">
+                <strong>Datos de Pago:</strong><br>
+                Banco de Venezuela | Cuenta: 0102-0336-8900-0009-5167<br>
+                RIF: J-506084597 | Tel: 0412-1751523
+            </div>
+
+            <label for="captura" class="upload-label" id="label-foto">
+                📸 Tomar foto de la Transferencia
+            </label>
+            <input type="file" id="captura" accept="image/*" capture="camera" style="display: none;" onchange="validarFoto()">
+            
+            <button id="btn-enviar" onclick="enviarPedido()" class="btn-confirmar">CONFIRMAR PEDIDO</button>
+        </div>
     </div>
 
-    <div id="status-cola" style="margin-top:20px; text-align:center;">
-        <p>Tiempo estimado de espera: <span class="timer" id="timer-display">--:--</span></p>
+    <div id="status-cola" style="text-align:center;">
+        <h3 id="mensaje-status">Pedido en Cocina</h3>
+        <p>No cierres esta ventana. Tu tiempo estimado es:</p>
+        <span class="timer" id="timer-display">12:00</span>
+        <p><small>Cola FIFO activa: Tu orden es la #<span id="orden-id">...</span></small></p>
     </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        // CONFIGURACIÓN DE FIREBASE (Pega aquí lo que copiaste de la consola)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.enviarPedido = async function() {
+            const imagen = document.getElementById('captura').files[0];
+            if(window.carrito.length === 0 || !imagen) {
+                alert("Agrega productos y toma la foto del pago");
+                return;
+            }
+
+            document.getElementById('btn-enviar').disabled = true;
+            document.getElementById('btn-enviar').innerText = "Enviando...";
+
+            const nuevoPedidoRef = push(ref(db, 'pedidos/'));
+            const pedidoID = nuevoPedidoRef.key.slice(-4);
+
+            await set(nuevoPedidoRef, {
+                items: window.carrito,
+                total: window.total,
+                status: "Pendiente",
+                timestamp: Date.now()
+            });
+
+            // Cambiar vista al Timer
+            document.getElementById('seccion-pedido').style.display = 'none';
+            document.getElementById('status-cola').style.display = 'block';
+            document.getElementById('orden-id').innerText = pedidoID;
+            
+            iniciarTimer(12);
+        }
+    </script>
 
     <script>
-        let carrito = [];
-        let total = 0;
+        window.carrito = [];
+        window.total = 0;
 
         function agregarAlCarrito(nombre, precio) {
-            carrito.push(nombre);
-            total += precio;
+            window.carrito.push(nombre);
+            window.total += precio;
             actualizarVista();
         }
 
         function actualizarVista() {
             const lista = document.getElementById('lista-carrito');
-            lista.innerHTML = carrito.map(i => `<li>${i}</li>`).join('');
-            document.getElementById('total').innerText = total;
+            lista.innerHTML = window.carrito.map(i => `<li>${i}</li>`).join('');
+            document.getElementById('total').innerText = window.total;
         }
 
-        function enviarPedido() {
-            const imagen = document.getElementById('captura').files[0];
-            if(carrito.length === 0 || !imagen) {
-                alert("Agrega productos y sube la captura de pago");
-                return;
-            }
-            alert("Pedido enviado a H&H BURGUER. En espera de validación.");
-            // Aquí se conectaría con la base de datos (Firebase)
+        function validarFoto() {
+            const label = document.getElementById('label-foto');
+            label.innerText = "✅ Foto Cargada";
+            label.style.background = "#28a745";
+        }
+
+        function iniciarTimer(minutos) {
+            let tiempo = minutos * 60;
+            const display = document.getElementById('timer-display');
+            const interval = setInterval(() => {
+                let m = Math.floor(tiempo / 60);
+                let s = tiempo % 60;
+                display.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if (--tiempo < 0) {
+                    clearInterval(interval);
+                    display.innerText = "¡LISTO!";
+                    document.getElementById('mensaje-status').innerText = "¡Pasa retirando tu pedido!";
+                }
+            }, 1000);
         }
     </script>
 </body>
