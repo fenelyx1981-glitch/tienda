@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H&H BURGUER - Pedidos</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #1a1a1a; color: white; padding: 20px; }
+        .header { text-align: center; color: #ffcc00; }
+        .menu-item { background: #333; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-add { background: #ffcc00; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #carrito { background: #fff; color: #000; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .timer { font-size: 1.2em; color: #ff4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>H&H BURGUER 🍔</h1>
+        <p>Selecciona tu combo y escanea tu pago</p>
+    </div>
+
+    <div id="menu-container">
+        <div class="menu-item">
+            <div><strong>H&H Monster</strong><br>$8.00</div>
+            <button class="btn-add" onclick="agregarAlCarrito('H&H Monster', 8)">+ Añadir</button>
+        </div>
+        <div class="menu-item">
+            <div><strong>Perro Premium</strong><br>$5.00</div>
+            <button class="btn-add" onclick="agregarAlCarrito('Perro Premium', 5)">+ Añadir</button>
+        </div>
+    </div>
+
+    <div id="carrito">
+        <h3>Tu Carrito</h3>
+        <ul id="lista-carrito"></ul>
+        <p><strong>Total: $<span id="total">0</span></strong></p>
+        <hr>
+        <h4>Pago Móvil / Transferencia</h4>
+        <p>Banco: H&H Bank | RIF: J-12345678 | Tel: 0412-5555555</p>
+        <label>Adjuntar Captura de Pago:</label><br>
+        <input type="file" id="captura" accept="image/*"><br><br>
+        <button onclick="enviarPedido()" style="width:100%; background: #28a745; color:white; padding:15px; border:none; border-radius:5px; font-size:1.1em;">CONFIRMAR PEDIDO</button>
+    </div>
+
+    <div id="status-cola" style="margin-top:20px; text-align:center;">
+        <p>Tiempo estimado de espera: <span class="timer" id="timer-display">--:--</span></p>
+    </div>
+
+    <script>
+        let carrito = [];
+        let total = 0;
+
+        function agregarAlCarrito(nombre, precio) {
+            carrito.push(nombre);
+            total += precio;
+            actualizarVista();
+        }
+
+        function actualizarVista() {
+            const lista = document.getElementById('lista-carrito');
+            lista.innerHTML = carrito.map(i => `<li>${i}</li>`).join('');
+            document.getElementById('total').innerText = total;
+        }
+
+        function enviarPedido() {
+            const imagen = document.getElementById('captura').files[0];
+            if(carrito.length === 0 || !imagen) {
+                alert("Agrega productos y sube la captura de pago");
+                return;
+            }
+            alert("Pedido enviado a H&H BURGUER. En espera de validación.");
+            // Aquí se conectaría con la base de datos (Firebase)
+        }
+    </script>
+</body>
+</html>
